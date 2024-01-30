@@ -209,7 +209,7 @@ func (a *equinixProvider) deleteOneInstance(ctx context.Context, instanceID stri
 	}
 	resp, err = a.cli.DevicesApi.DeleteDevice(ctx, instanceID).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
+		if resp != nil && (resp.StatusCode == 404 || resp.StatusCode == 403) {
 			return nil
 		}
 		if state == metal.DEVICESTATE_DELETED || state == metal.DEVICESTATE_FAILED {
