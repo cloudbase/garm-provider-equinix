@@ -106,8 +106,21 @@ func (a *equinixProvider) waitDeviceActive(ctx context.Context, deviceID string)
 				}
 				return nil
 			}
+
+			// Return potentially a lot earlier than the instance is active. Equinix seems to wait for
+			// user-data scripts to finish running before it phones home. This might cause status updates
+			// to arive while the instance is still in "creating" state.
+			// This is currently allowed, although it might change in the future.
+			if device.GetProvisioningPercentage() >= 90 {
+				p, err = equinixToGarmInstance(*device)
+				if err != nil {
+					return fmt.Errorf("failed to convert device: %w", errStopRetry)
+				}
+				return nil
+			}
 			return fmt.Errorf("instance not active yet")
 		},
+		// Roughly 20 minutes. Might be longer if API calls take longer.
 		Attempts: 240,
 		Delay:    5 * time.Second,
 		Clock:    clock.WallClock,
@@ -183,7 +196,7 @@ func (a *equinixProvider) deleteOneInstance(ctx context.Context, instanceID stri
 	}
 	device, resp, err := a.cli.DevicesApi.FindDeviceById(ctx, instanceID).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
+		if resp != nil && (resp.StatusCode == 404 || resp.StatusCode == 403) {
 			return nil
 		}
 		return fmt.Errorf("failed to find device: %w", err)

@@ -71,21 +71,7 @@ func (a *equinixProvider) CreateInstance(ctx context.Context, bootstrapParams pa
 		},
 	}
 
-	var device *metal.Device
-
-	defer func() {
-		if err != nil {
-			nameOrID := bootstrapParams.Name
-			if device != nil && device.GetId() != "" {
-				nameOrID = device.GetId()
-			}
-			if err := a.DeleteInstance(ctx, nameOrID); err != nil {
-				fmt.Printf("failed to delete instance: %q", err)
-			}
-		}
-	}()
-
-	device, _, err = a.cli.DevicesApi.CreateDevice(context.Background(), a.cfg.ProjectID).CreateDeviceRequest(deviceRequest).Execute()
+	device, _, err := a.cli.DevicesApi.CreateDevice(context.Background(), a.cfg.ProjectID).CreateDeviceRequest(deviceRequest).Execute()
 	if err != nil {
 		return params.ProviderInstance{}, fmt.Errorf("failed to create device: %w", err)
 	}
