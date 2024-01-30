@@ -1,3 +1,7 @@
 auth_token = "YOUR_API_TOKEN_HERE"
 metro_code = "AM"
 project_id = "PROJECT_UUID_GOES_HERE"
+# hardware_reservation_id is the equinix metal hardware reservation id
+# This option is only needed if you want to use an existing hardware reservation.
+# Leave commented if you just want to spin up on-demand servers.
+# hardware_reservation_id = "RESERVATION_UUID_GOES_HERE"
