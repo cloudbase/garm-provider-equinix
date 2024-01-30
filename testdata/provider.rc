@@ -1,0 +1,5 @@
+export GARM_COMMAND="DeleteInstance"
+export GARM_CONTROLLER_ID="87102c86-c461-4465-b4e2-10177f31aba3"
+export GARM_POOL_ID="d3e2d284-1768-4b1b-87d5-e1f61e4cd7f9"
+export GARM_PROVIDER_CONFIG_FILE="/etc/garm/garm-provider-equinix.toml"
+export GARM_INSTANCE_ID="garm-EyCYvlob0h2y"

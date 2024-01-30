@@ -1,0 +1,3 @@
+auth_token = "YOUR_API_TOKEN_HERE"
+metro_code = "AM"
+project_id = "PROJECT_UUID_GOES_HERE"
