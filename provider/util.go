@@ -17,6 +17,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -46,6 +47,20 @@ var statusMap = map[metal.DeviceState]params.InstanceStatus{
 	metal.DEVICESTATE_POWERING_OFF: params.InstanceStopped,
 	metal.DeviceState(""):          params.InstanceStatusUnknown,
 }
+
+type ExecuteFindDeviceByID func(r metal.ApiFindDeviceByIdRequest) (*metal.Device, *http.Response, error)
+type ExecuteFindProjectDevices func(r metal.ApiFindProjectDevicesRequest) (*metal.DeviceList, *http.Response, error)
+type ExecuteDeleteDevice func(r metal.ApiDeleteDeviceRequest) (*http.Response, error)
+type ExecuteCreateDevice func(r metal.ApiCreateDeviceRequest) (*metal.Device, *http.Response, error)
+type ExecutePerformAction func(r metal.ApiPerformActionRequest) (*http.Response, error)
+
+var (
+	DefaultExecuteFindDeviceByID     ExecuteFindDeviceByID     = metal.ApiFindDeviceByIdRequest.Execute
+	DefaultExecuteFindProjectDevices ExecuteFindProjectDevices = metal.ApiFindProjectDevicesRequest.Execute
+	DefaultExecuteDeleteDevice       ExecuteDeleteDevice       = metal.ApiDeleteDeviceRequest.Execute
+	DefaultExecuteCreateDevice       ExecuteCreateDevice       = metal.ApiCreateDeviceRequest.Execute
+	DefaultExecutePerformAction      ExecutePerformAction      = metal.ApiPerformActionRequest.Execute
+)
 
 func equinixToGarmInstance(device metal.Device) (params.ProviderInstance, error) {
 	tags := extractTagsAsMap(device)
@@ -97,7 +112,7 @@ func (a *equinixProvider) waitDeviceActive(ctx context.Context, deviceID string)
 		},
 		Func: func() error {
 			var err error
-			device, _, err := a.cli.DevicesApi.FindDeviceById(ctx, deviceID).Execute()
+			device, _, err := DefaultExecuteFindDeviceByID(a.cli.FindDeviceById(ctx, deviceID))
 			if err != nil {
 				return fmt.Errorf("failed to find device: %w", errStopRetry)
 			}
@@ -149,7 +164,7 @@ func (a *equinixProvider) waitDeviceActive(ctx context.Context, deviceID string)
 func (a *equinixProvider) findInstancesByName(ctx context.Context, instance string) ([]metal.Device, error) {
 	ret := []metal.Device{}
 
-	devices, _, err := a.cli.DevicesApi.FindProjectDevices(ctx, a.cfg.ProjectID).Execute()
+	devices, _, err := DefaultExecuteFindProjectDevices(a.cli.FindProjectDevices(ctx, a.cfg.ProjectID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to list devices: %w", err)
 	}
@@ -208,7 +223,7 @@ func (a *equinixProvider) deleteOneInstance(ctx context.Context, instanceID stri
 	if err != nil {
 		return fmt.Errorf("invalid instance ID %s: %w", instanceID, err)
 	}
-	device, resp, err := a.cli.DevicesApi.FindDeviceById(ctx, instanceID).Execute()
+	device, resp, err := DefaultExecuteFindDeviceByID(a.cli.FindDeviceById(ctx, instanceID))
 	if err != nil {
 		if resp != nil && (resp.StatusCode == 404 || resp.StatusCode == 403) {
 			return nil
@@ -221,7 +236,7 @@ func (a *equinixProvider) deleteOneInstance(ctx context.Context, instanceID stri
 			return fmt.Errorf("failed to wait for device: %w", err)
 		}
 	}
-	resp, err = a.cli.DevicesApi.DeleteDevice(ctx, instanceID).Execute()
+	resp, err = DefaultExecuteDeleteDevice(a.cli.DeleteDevice(ctx, instanceID))
 	if err != nil {
 		if resp != nil && (resp.StatusCode == 404 || resp.StatusCode == 403) {
 			return nil

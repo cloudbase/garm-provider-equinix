@@ -29,6 +29,15 @@ const (
 	PoolIDTagName       = "garm-pool-id"
 )
 
+type ToolFetchFunc func(osType params.OSType, osArch params.OSArch, tools []params.RunnerApplicationDownload) (params.RunnerApplicationDownload, error)
+
+type GetCloudConfigFunc func(bootstrapParams params.BootstrapInstance, tools params.RunnerApplicationDownload, runnerName string) (string, error)
+
+var (
+	DefaultToolFetch      ToolFetchFunc      = util.GetTools
+	DefaultGetCloudconfig GetCloudConfigFunc = cloudconfig.GetCloudConfig
+)
+
 const jsonSchema string = `
 	{
 		"$schema": "http://cloudbase.it/garm-provider-equinix/schemas/extra_specs#",
@@ -80,13 +89,13 @@ func newExtraSpecsFromBootstrapData(data params.BootstrapInstance) (extraSpecs, 
 type extraSpecs struct {
 	// MetroCode is the metro (usually a two letter code) to use for the instance.
 	// See: https://deploy.equinix.com/developers/docs/metal/locations/metros/
-	MetroCode string `toml:"metro_code"`
+	MetroCode string `json:"metro_code"`
 	// HardwareReservationID is the UUID representing the hardware reservation to use.
-	HardwareReservationID *string `toml:"hardware_reservation_id,omitempty"`
+	HardwareReservationID *string `json:"hardware_reservation_id,omitempty"`
 }
 
 func GetRunnerSpecFromBootstrapParams(data params.BootstrapInstance, controllerID string) (*RunnerSpec, error) {
-	tools, err := util.GetTools(data.OSType, data.OSArch, data.Tools)
+	tools, err := DefaultToolFetch(data.OSType, data.OSArch, data.Tools)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tools: %s", err)
 	}
@@ -155,7 +164,7 @@ func (r *RunnerSpec) ComposeUserData() (string, error) {
 		return "", fmt.Errorf("unsupported OS type for cloud config: %s", r.BootstrapParams.OSType)
 	}
 
-	udata, err := cloudconfig.GetCloudConfig(r.BootstrapParams, r.Tools, r.BootstrapParams.Name)
+	udata, err := DefaultGetCloudconfig(r.BootstrapParams, r.Tools, r.BootstrapParams.Name)
 	if err != nil {
 		return "", fmt.Errorf("failed to generate userdata: %w", err)
 	}
@@ -163,4 +172,8 @@ func (r *RunnerSpec) ComposeUserData() (string, error) {
 		udata = fmt.Sprintf("#ps1_sysnative\n%s", udata)
 	}
 	return udata, nil
+}
+
+func Ptr[T any](v T) *T {
+	return &v
 }
