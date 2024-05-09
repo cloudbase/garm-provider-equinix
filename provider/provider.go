@@ -43,13 +43,21 @@ func NewEquinixProvider(configPath, controllerID string) (execution.ExternalProv
 
 	return &equinixProvider{
 		cfg:          conf,
-		cli:          api_client,
+		cli:          api_client.DevicesApi,
 		controllerID: controllerID,
 	}, nil
 }
 
+type DevicesApiServiceInterface interface {
+	FindDeviceById(ctx context.Context, id string) metal.ApiFindDeviceByIdRequest
+	FindProjectDevices(ctx context.Context, id string) metal.ApiFindProjectDevicesRequest
+	CreateDevice(ctx context.Context, id string) metal.ApiCreateDeviceRequest
+	DeleteDevice(ctx context.Context, id string) metal.ApiDeleteDeviceRequest
+	PerformAction(ctx context.Context, id string) metal.ApiPerformActionRequest
+}
+
 type equinixProvider struct {
-	cli          *metal.APIClient
+	cli          DevicesApiServiceInterface
 	cfg          *config.Config
 	controllerID string
 }
@@ -85,7 +93,7 @@ func (a *equinixProvider) CreateInstance(ctx context.Context, bootstrapParams pa
 		},
 	}
 
-	device, _, err := a.cli.DevicesApi.CreateDevice(context.Background(), a.cfg.ProjectID).CreateDeviceRequest(deviceRequest).Execute()
+	device, _, err := DefaultExecuteCreateDevice(a.cli.CreateDevice(context.Background(), a.cfg.ProjectID).CreateDeviceRequest(deviceRequest))
 	if err != nil {
 		return params.ProviderInstance{}, fmt.Errorf("failed to create device: %w", err)
 	}
@@ -97,7 +105,7 @@ func (a *equinixProvider) CreateInstance(ctx context.Context, bootstrapParams pa
 
 // GetInstance will return details about one instance.
 func (a *equinixProvider) GetInstance(ctx context.Context, instance string) (params.ProviderInstance, error) {
-	device, _, err := a.cli.DevicesApi.FindDeviceById(ctx, instance).Execute()
+	device, _, err := DefaultExecuteFindDeviceByID(a.cli.FindDeviceById(ctx, instance))
 	if err != nil {
 		return params.ProviderInstance{}, fmt.Errorf("failed to find device: %w", err)
 	}
@@ -113,7 +121,7 @@ func (a *equinixProvider) GetInstance(ctx context.Context, instance string) (par
 
 // ListInstances will list all instances for a provider.
 func (a *equinixProvider) ListInstances(ctx context.Context, poolID string) ([]params.ProviderInstance, error) {
-	devices, _, err := a.cli.DevicesApi.FindProjectDevices(ctx, a.cfg.ProjectID).Execute()
+	devices, _, err := DefaultExecuteFindProjectDevices(a.cli.FindProjectDevices(ctx, a.cfg.ProjectID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to list devices: %w", err)
 	}
@@ -178,9 +186,9 @@ func (a *equinixProvider) RemoveAllInstances(ctx context.Context) error {
 
 // Stop shuts down the instance.
 func (a *equinixProvider) Stop(ctx context.Context, instance string, force bool) error {
-	_, err := a.cli.DevicesApi.PerformAction(ctx, instance).DeviceActionInput(metal.DeviceActionInput{
+	_, err := DefaultExecutePerformAction(a.cli.PerformAction(ctx, instance).DeviceActionInput(metal.DeviceActionInput{
 		Type: metal.DEVICEACTIONINPUTTYPE_POWER_OFF,
-	}).Execute()
+	}))
 	if err != nil {
 		return fmt.Errorf("failed to stop device: %w", err)
 	}
@@ -189,9 +197,9 @@ func (a *equinixProvider) Stop(ctx context.Context, instance string, force bool)
 
 // Start boots up an instance.
 func (a *equinixProvider) Start(ctx context.Context, instance string) error {
-	_, err := a.cli.DevicesApi.PerformAction(ctx, instance).DeviceActionInput(metal.DeviceActionInput{
+	_, err := DefaultExecutePerformAction(a.cli.PerformAction(ctx, instance).DeviceActionInput(metal.DeviceActionInput{
 		Type: metal.DEVICEACTIONINPUTTYPE_POWER_ON,
-	}).Execute()
+	}))
 	if err != nil {
 		return fmt.Errorf("failed to start device: %w", err)
 	}

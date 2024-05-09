@@ -80,7 +80,8 @@ To this end, this provider supports the following extra specs schema:
             "type": "string",
             "description": "The hardware reservation ID to use."
         }
-    }
+    },
+    "additionalProperties": false
 }
 ```
 
