@@ -21,7 +21,7 @@ var _ MappedNullable = &MetroInput{}
 
 // MetroInput struct for MetroInput
 type MetroInput struct {
-	// Metro code or ID of where the instance should be provisioned in. Either metro or facility must be provided.
+	// Metro code or ID of where the device should be provisioned in, or it can be instructed to create the device in the best available metro with `{ \"metro\": \"any\" }`. The special metro value of any means anywhere, any metro. When any is chosen in the request, the metro location is picked per our scheduling algorithms that favor the following factors: hardware reservation location (if requesting reserved hardware), ip reservations, spot instances, etc. The any keyword *does not* optimize for cost, this means that usage costs (instance, transfer, other features dependent on location) will vary. Please check metro value in response to see where the device was created. Either metro or facility must be provided.
 	Metro                string `json:"metro"`
 	AdditionalProperties map[string]interface{}
 }
@@ -89,7 +89,7 @@ func (o MetroInput) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *MetroInput) UnmarshalJSON(bytes []byte) (err error) {
+func (o *MetroInput) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -99,7 +99,7 @@ func (o *MetroInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	allProperties := make(map[string]interface{})
 
-	err = json.Unmarshal(bytes, &allProperties)
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (o *MetroInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	varMetroInput := _MetroInput{}
 
-	err = json.Unmarshal(bytes, &varMetroInput)
+	err = json.Unmarshal(data, &varMetroInput)
 
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func (o *MetroInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "metro")
 		o.AdditionalProperties = additionalProperties
 	}

@@ -26,6 +26,7 @@ type DedicatedPortCreateInput struct {
 	// The preferred email used for communication and notifications about the Equinix Fabric interconnection. Required when using a Project API key. Optional and defaults to the primary user email address when using a User API key.
 	ContactEmail *string `json:"contact_email,omitempty"`
 	Description  *string `json:"description,omitempty"`
+	FacilityId   *string `json:"facility_id,omitempty"`
 	// A Metro ID or code. For interconnections with Dedicated Ports, this will be the location of the issued Dedicated Ports.
 	Metro   string                        `json:"metro"`
 	Mode    *DedicatedPortCreateInputMode `json:"mode,omitempty"`
@@ -34,7 +35,7 @@ type DedicatedPortCreateInput struct {
 	// Either 'primary' or 'redundant'.
 	Redundancy string `json:"redundancy"`
 	// A interconnection speed, in bps, mbps, or gbps. For Dedicated Ports, this can be 10Gbps or 100Gbps.
-	Speed *int32                       `json:"speed,omitempty"`
+	Speed *string                      `json:"speed,omitempty"`
 	Tags  []string                     `json:"tags,omitempty"`
 	Type  DedicatedPortCreateInputType `json:"type"`
 	// The intended use case of the dedicated port.
@@ -159,6 +160,38 @@ func (o *DedicatedPortCreateInput) HasDescription() bool {
 // SetDescription gets a reference to the given string and assigns it to the Description field.
 func (o *DedicatedPortCreateInput) SetDescription(v string) {
 	o.Description = &v
+}
+
+// GetFacilityId returns the FacilityId field value if set, zero value otherwise.
+func (o *DedicatedPortCreateInput) GetFacilityId() string {
+	if o == nil || IsNil(o.FacilityId) {
+		var ret string
+		return ret
+	}
+	return *o.FacilityId
+}
+
+// GetFacilityIdOk returns a tuple with the FacilityId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *DedicatedPortCreateInput) GetFacilityIdOk() (*string, bool) {
+	if o == nil || IsNil(o.FacilityId) {
+		return nil, false
+	}
+	return o.FacilityId, true
+}
+
+// HasFacilityId returns a boolean if a field has been set.
+func (o *DedicatedPortCreateInput) HasFacilityId() bool {
+	if o != nil && !IsNil(o.FacilityId) {
+		return true
+	}
+
+	return false
+}
+
+// SetFacilityId gets a reference to the given string and assigns it to the FacilityId field.
+func (o *DedicatedPortCreateInput) SetFacilityId(v string) {
+	o.FacilityId = &v
 }
 
 // GetMetro returns the Metro field value
@@ -298,9 +331,9 @@ func (o *DedicatedPortCreateInput) SetRedundancy(v string) {
 }
 
 // GetSpeed returns the Speed field value if set, zero value otherwise.
-func (o *DedicatedPortCreateInput) GetSpeed() int32 {
+func (o *DedicatedPortCreateInput) GetSpeed() string {
 	if o == nil || IsNil(o.Speed) {
-		var ret int32
+		var ret string
 		return ret
 	}
 	return *o.Speed
@@ -308,7 +341,7 @@ func (o *DedicatedPortCreateInput) GetSpeed() int32 {
 
 // GetSpeedOk returns a tuple with the Speed field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DedicatedPortCreateInput) GetSpeedOk() (*int32, bool) {
+func (o *DedicatedPortCreateInput) GetSpeedOk() (*string, bool) {
 	if o == nil || IsNil(o.Speed) {
 		return nil, false
 	}
@@ -324,8 +357,8 @@ func (o *DedicatedPortCreateInput) HasSpeed() bool {
 	return false
 }
 
-// SetSpeed gets a reference to the given int32 and assigns it to the Speed field.
-func (o *DedicatedPortCreateInput) SetSpeed(v int32) {
+// SetSpeed gets a reference to the given string and assigns it to the Speed field.
+func (o *DedicatedPortCreateInput) SetSpeed(v string) {
 	o.Speed = &v
 }
 
@@ -436,6 +469,9 @@ func (o DedicatedPortCreateInput) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
+	if !IsNil(o.FacilityId) {
+		toSerialize["facility_id"] = o.FacilityId
+	}
 	toSerialize["metro"] = o.Metro
 	if !IsNil(o.Mode) {
 		toSerialize["mode"] = o.Mode
@@ -463,7 +499,7 @@ func (o DedicatedPortCreateInput) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *DedicatedPortCreateInput) UnmarshalJSON(bytes []byte) (err error) {
+func (o *DedicatedPortCreateInput) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -476,7 +512,7 @@ func (o *DedicatedPortCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	allProperties := make(map[string]interface{})
 
-	err = json.Unmarshal(bytes, &allProperties)
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
@@ -490,7 +526,7 @@ func (o *DedicatedPortCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	varDedicatedPortCreateInput := _DedicatedPortCreateInput{}
 
-	err = json.Unmarshal(bytes, &varDedicatedPortCreateInput)
+	err = json.Unmarshal(data, &varDedicatedPortCreateInput)
 
 	if err != nil {
 		return err
@@ -500,10 +536,11 @@ func (o *DedicatedPortCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "billing_account_name")
 		delete(additionalProperties, "contact_email")
 		delete(additionalProperties, "description")
+		delete(additionalProperties, "facility_id")
 		delete(additionalProperties, "metro")
 		delete(additionalProperties, "mode")
 		delete(additionalProperties, "name")

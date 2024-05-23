@@ -26,7 +26,7 @@ type VlanVirtualCircuitCreateInput struct {
 	NniVlan     *int32  `json:"nni_vlan,omitempty"`
 	ProjectId   string  `json:"project_id"`
 	// speed can be passed as integer number representing bps speed or string (e.g. '52m' or '100g' or '4 gbps')
-	Speed *int32   `json:"speed,omitempty"`
+	Speed *string  `json:"speed,omitempty"`
 	Tags  []string `json:"tags,omitempty"`
 	// A Virtual Network record UUID or the VNID of a Metro Virtual Network in your project (sent as integer).
 	Vnid                 *string `json:"vnid,omitempty"`
@@ -174,9 +174,9 @@ func (o *VlanVirtualCircuitCreateInput) SetProjectId(v string) {
 }
 
 // GetSpeed returns the Speed field value if set, zero value otherwise.
-func (o *VlanVirtualCircuitCreateInput) GetSpeed() int32 {
+func (o *VlanVirtualCircuitCreateInput) GetSpeed() string {
 	if o == nil || IsNil(o.Speed) {
-		var ret int32
+		var ret string
 		return ret
 	}
 	return *o.Speed
@@ -184,7 +184,7 @@ func (o *VlanVirtualCircuitCreateInput) GetSpeed() int32 {
 
 // GetSpeedOk returns a tuple with the Speed field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VlanVirtualCircuitCreateInput) GetSpeedOk() (*int32, bool) {
+func (o *VlanVirtualCircuitCreateInput) GetSpeedOk() (*string, bool) {
 	if o == nil || IsNil(o.Speed) {
 		return nil, false
 	}
@@ -200,8 +200,8 @@ func (o *VlanVirtualCircuitCreateInput) HasSpeed() bool {
 	return false
 }
 
-// SetSpeed gets a reference to the given int32 and assigns it to the Speed field.
-func (o *VlanVirtualCircuitCreateInput) SetSpeed(v int32) {
+// SetSpeed gets a reference to the given string and assigns it to the Speed field.
+func (o *VlanVirtualCircuitCreateInput) SetSpeed(v string) {
 	o.Speed = &v
 }
 
@@ -306,7 +306,7 @@ func (o VlanVirtualCircuitCreateInput) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *VlanVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) {
+func (o *VlanVirtualCircuitCreateInput) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -316,7 +316,7 @@ func (o *VlanVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) 
 
 	allProperties := make(map[string]interface{})
 
-	err = json.Unmarshal(bytes, &allProperties)
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
@@ -330,7 +330,7 @@ func (o *VlanVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) 
 
 	varVlanVirtualCircuitCreateInput := _VlanVirtualCircuitCreateInput{}
 
-	err = json.Unmarshal(bytes, &varVlanVirtualCircuitCreateInput)
+	err = json.Unmarshal(data, &varVlanVirtualCircuitCreateInput)
 
 	if err != nil {
 		return err
@@ -340,7 +340,7 @@ func (o *VlanVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) 
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "description")
 		delete(additionalProperties, "name")
 		delete(additionalProperties, "nni_vlan")

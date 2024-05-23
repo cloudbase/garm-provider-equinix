@@ -31,10 +31,10 @@ type VrfVirtualCircuitCreateInput struct {
 	Name    *string `json:"name,omitempty"`
 	NniVlan int32   `json:"nni_vlan"`
 	// The peer ASN that will be used with the VRF on the Virtual Circuit.
-	PeerAsn   int32  `json:"peer_asn"`
+	PeerAsn   int64  `json:"peer_asn"`
 	ProjectId string `json:"project_id"`
 	// speed can be passed as integer number representing bps speed or string (e.g. '52m' or '100g' or '4 gbps')
-	Speed *int32 `json:"speed,omitempty"`
+	Speed *string `json:"speed,omitempty"`
 	// The /30 or /31 subnet of one of the VRF IP Blocks that will be used with the VRF for the Virtual Circuit. This subnet does not have to be an existing VRF IP reservation, as we will create the VRF IP reservation on creation if it does not exist. The Metal IP and Customer IP must be IPs from this subnet. For /30 subnets, the network and broadcast IPs cannot be used as the Metal or Customer IP. The subnet specified must be contained within an already-defined IP Range for the VRF.
 	Subnet string   `json:"subnet"`
 	Tags   []string `json:"tags,omitempty"`
@@ -49,7 +49,7 @@ type _VrfVirtualCircuitCreateInput VrfVirtualCircuitCreateInput
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewVrfVirtualCircuitCreateInput(nniVlan int32, peerAsn int32, projectId string, subnet string, vrf string) *VrfVirtualCircuitCreateInput {
+func NewVrfVirtualCircuitCreateInput(nniVlan int32, peerAsn int64, projectId string, subnet string, vrf string) *VrfVirtualCircuitCreateInput {
 	this := VrfVirtualCircuitCreateInput{}
 	this.NniVlan = nniVlan
 	this.PeerAsn = peerAsn
@@ -263,9 +263,9 @@ func (o *VrfVirtualCircuitCreateInput) SetNniVlan(v int32) {
 }
 
 // GetPeerAsn returns the PeerAsn field value
-func (o *VrfVirtualCircuitCreateInput) GetPeerAsn() int32 {
+func (o *VrfVirtualCircuitCreateInput) GetPeerAsn() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -274,7 +274,7 @@ func (o *VrfVirtualCircuitCreateInput) GetPeerAsn() int32 {
 
 // GetPeerAsnOk returns a tuple with the PeerAsn field value
 // and a boolean to check if the value has been set.
-func (o *VrfVirtualCircuitCreateInput) GetPeerAsnOk() (*int32, bool) {
+func (o *VrfVirtualCircuitCreateInput) GetPeerAsnOk() (*int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -282,7 +282,7 @@ func (o *VrfVirtualCircuitCreateInput) GetPeerAsnOk() (*int32, bool) {
 }
 
 // SetPeerAsn sets field value
-func (o *VrfVirtualCircuitCreateInput) SetPeerAsn(v int32) {
+func (o *VrfVirtualCircuitCreateInput) SetPeerAsn(v int64) {
 	o.PeerAsn = v
 }
 
@@ -311,9 +311,9 @@ func (o *VrfVirtualCircuitCreateInput) SetProjectId(v string) {
 }
 
 // GetSpeed returns the Speed field value if set, zero value otherwise.
-func (o *VrfVirtualCircuitCreateInput) GetSpeed() int32 {
+func (o *VrfVirtualCircuitCreateInput) GetSpeed() string {
 	if o == nil || IsNil(o.Speed) {
-		var ret int32
+		var ret string
 		return ret
 	}
 	return *o.Speed
@@ -321,7 +321,7 @@ func (o *VrfVirtualCircuitCreateInput) GetSpeed() int32 {
 
 // GetSpeedOk returns a tuple with the Speed field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VrfVirtualCircuitCreateInput) GetSpeedOk() (*int32, bool) {
+func (o *VrfVirtualCircuitCreateInput) GetSpeedOk() (*string, bool) {
 	if o == nil || IsNil(o.Speed) {
 		return nil, false
 	}
@@ -337,8 +337,8 @@ func (o *VrfVirtualCircuitCreateInput) HasSpeed() bool {
 	return false
 }
 
-// SetSpeed gets a reference to the given int32 and assigns it to the Speed field.
-func (o *VrfVirtualCircuitCreateInput) SetSpeed(v int32) {
+// SetSpeed gets a reference to the given string and assigns it to the Speed field.
+func (o *VrfVirtualCircuitCreateInput) SetSpeed(v string) {
 	o.Speed = &v
 }
 
@@ -466,7 +466,7 @@ func (o VrfVirtualCircuitCreateInput) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *VrfVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) {
+func (o *VrfVirtualCircuitCreateInput) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -480,7 +480,7 @@ func (o *VrfVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	allProperties := make(map[string]interface{})
 
-	err = json.Unmarshal(bytes, &allProperties)
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
@@ -494,7 +494,7 @@ func (o *VrfVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	varVrfVirtualCircuitCreateInput := _VrfVirtualCircuitCreateInput{}
 
-	err = json.Unmarshal(bytes, &varVrfVirtualCircuitCreateInput)
+	err = json.Unmarshal(data, &varVrfVirtualCircuitCreateInput)
 
 	if err != nil {
 		return err
@@ -504,7 +504,7 @@ func (o *VrfVirtualCircuitCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "customer_ip")
 		delete(additionalProperties, "description")
 		delete(additionalProperties, "md5")
