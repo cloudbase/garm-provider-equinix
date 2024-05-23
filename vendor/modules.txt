@@ -1,8 +1,8 @@
-# github.com/BurntSushi/toml v1.2.1
+# github.com/BurntSushi/toml v1.3.2
 ## explicit; go 1.16
 github.com/BurntSushi/toml
 github.com/BurntSushi/toml/internal
-# github.com/cloudbase/garm-provider-common v0.1.2-0.20240127222153-ceeb0b7cc5d7
+# github.com/cloudbase/garm-provider-common v0.1.2
 ## explicit; go 1.20
 github.com/cloudbase/garm-provider-common/cloudconfig
 github.com/cloudbase/garm-provider-common/defaults
@@ -13,31 +13,31 @@ github.com/cloudbase/garm-provider-common/util
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/equinix/equinix-sdk-go v0.31.0
+# github.com/equinix/equinix-sdk-go v0.39.1
 ## explicit; go 1.19
 github.com/equinix/equinix-sdk-go/services/metalv1
-# github.com/felixge/httpsnoop v1.0.3
+# github.com/felixge/httpsnoop v1.0.4
 ## explicit; go 1.13
 github.com/felixge/httpsnoop
-# github.com/google/uuid v1.3.0
+# github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
-# github.com/gorilla/handlers v1.5.1
-## explicit; go 1.14
+# github.com/gorilla/handlers v1.5.2
+## explicit; go 1.20
 github.com/gorilla/handlers
 # github.com/juju/clock v1.0.3
 ## explicit; go 1.18
 github.com/juju/clock
-# github.com/juju/errors v0.0.0-20220203013757-bd733f3c86b9
-## explicit; go 1.17
+# github.com/juju/errors v1.0.0
+## explicit; go 1.18
 github.com/juju/errors
 # github.com/juju/retry v1.0.0
 ## explicit; go 1.17
 github.com/juju/retry
-# github.com/mattn/go-isatty v0.0.19
+# github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/minio/sio v0.3.1
+# github.com/minio/sio v0.4.0
 ## explicit; go 1.18
 github.com/minio/sio
 # github.com/pkg/errors v0.9.1
@@ -57,7 +57,7 @@ github.com/stretchr/testify/require
 # github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 ## explicit; go 1.18
 github.com/teris-io/shortid
-# github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f
+# github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb
 ## explicit
 github.com/xeipuuv/gojsonpointer
 # github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
@@ -66,8 +66,8 @@ github.com/xeipuuv/gojsonreference
 # github.com/xeipuuv/gojsonschema v1.2.0
 ## explicit
 github.com/xeipuuv/gojsonschema
-# golang.org/x/crypto v0.12.0
-## explicit; go 1.17
+# golang.org/x/crypto v0.23.0
+## explicit; go 1.18
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/chacha20
@@ -75,11 +75,11 @@ golang.org/x/crypto/chacha20poly1305
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
-# golang.org/x/sync v0.6.0
+# golang.org/x/sync v0.7.0
 ## explicit; go 1.18
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.11.0
-## explicit; go 1.17
+# golang.org/x/sys v0.20.0
+## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 # gopkg.in/natefinch/lumberjack.v2 v2.2.1

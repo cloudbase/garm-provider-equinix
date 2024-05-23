@@ -29,15 +29,15 @@ type VrfVirtualCircuit struct {
 	// The MD5 password for the BGP peering in plaintext (not a checksum).
 	Md5 *string `json:"md5,omitempty"`
 	// An IP address from the subnet that will be used on the Metal side. This parameter is optional, but if supplied, we will use the other usable IP address in the subnet as the Customer IP. By default, the first usable IP address in the subnet will be used.
-	MetalIp *string `json:"metal_ip,omitempty"`
-	Name    *string `json:"name,omitempty"`
-	Port    *Href   `json:"port,omitempty"`
-	NniVlan *int32  `json:"nni_vlan,omitempty"`
+	MetalIp *string              `json:"metal_ip,omitempty"`
+	Name    *string              `json:"name,omitempty"`
+	Port    *InterconnectionPort `json:"port,omitempty"`
+	NniVlan *int32               `json:"nni_vlan,omitempty"`
 	// The peer ASN that will be used with the VRF on the Virtual Circuit.
-	PeerAsn *int32 `json:"peer_asn,omitempty"`
-	Project *Href  `json:"project,omitempty"`
+	PeerAsn *int64   `json:"peer_asn,omitempty"`
+	Project *Project `json:"project,omitempty"`
 	// integer representing bps speed
-	Speed  *int32                   `json:"speed,omitempty"`
+	Speed  *int64                   `json:"speed,omitempty"`
 	Status *VrfVirtualCircuitStatus `json:"status,omitempty"`
 	// The /30 or /31 subnet of one of the VRF IP Blocks that will be used with the VRF for the Virtual Circuit. This subnet does not have to be an existing VRF IP reservation, as we will create the VRF IP reservation on creation if it does not exist. The Metal IP and Customer IP must be IPs from this subnet. For /30 subnets, the network and broadcast IPs cannot be used as the Metal or Customer IP.
 	Subnet               *string               `json:"subnet,omitempty"`
@@ -262,9 +262,9 @@ func (o *VrfVirtualCircuit) SetName(v string) {
 }
 
 // GetPort returns the Port field value if set, zero value otherwise.
-func (o *VrfVirtualCircuit) GetPort() Href {
+func (o *VrfVirtualCircuit) GetPort() InterconnectionPort {
 	if o == nil || IsNil(o.Port) {
-		var ret Href
+		var ret InterconnectionPort
 		return ret
 	}
 	return *o.Port
@@ -272,7 +272,7 @@ func (o *VrfVirtualCircuit) GetPort() Href {
 
 // GetPortOk returns a tuple with the Port field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VrfVirtualCircuit) GetPortOk() (*Href, bool) {
+func (o *VrfVirtualCircuit) GetPortOk() (*InterconnectionPort, bool) {
 	if o == nil || IsNil(o.Port) {
 		return nil, false
 	}
@@ -288,8 +288,8 @@ func (o *VrfVirtualCircuit) HasPort() bool {
 	return false
 }
 
-// SetPort gets a reference to the given Href and assigns it to the Port field.
-func (o *VrfVirtualCircuit) SetPort(v Href) {
+// SetPort gets a reference to the given InterconnectionPort and assigns it to the Port field.
+func (o *VrfVirtualCircuit) SetPort(v InterconnectionPort) {
 	o.Port = &v
 }
 
@@ -326,9 +326,9 @@ func (o *VrfVirtualCircuit) SetNniVlan(v int32) {
 }
 
 // GetPeerAsn returns the PeerAsn field value if set, zero value otherwise.
-func (o *VrfVirtualCircuit) GetPeerAsn() int32 {
+func (o *VrfVirtualCircuit) GetPeerAsn() int64 {
 	if o == nil || IsNil(o.PeerAsn) {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.PeerAsn
@@ -336,7 +336,7 @@ func (o *VrfVirtualCircuit) GetPeerAsn() int32 {
 
 // GetPeerAsnOk returns a tuple with the PeerAsn field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VrfVirtualCircuit) GetPeerAsnOk() (*int32, bool) {
+func (o *VrfVirtualCircuit) GetPeerAsnOk() (*int64, bool) {
 	if o == nil || IsNil(o.PeerAsn) {
 		return nil, false
 	}
@@ -352,15 +352,15 @@ func (o *VrfVirtualCircuit) HasPeerAsn() bool {
 	return false
 }
 
-// SetPeerAsn gets a reference to the given int32 and assigns it to the PeerAsn field.
-func (o *VrfVirtualCircuit) SetPeerAsn(v int32) {
+// SetPeerAsn gets a reference to the given int64 and assigns it to the PeerAsn field.
+func (o *VrfVirtualCircuit) SetPeerAsn(v int64) {
 	o.PeerAsn = &v
 }
 
 // GetProject returns the Project field value if set, zero value otherwise.
-func (o *VrfVirtualCircuit) GetProject() Href {
+func (o *VrfVirtualCircuit) GetProject() Project {
 	if o == nil || IsNil(o.Project) {
-		var ret Href
+		var ret Project
 		return ret
 	}
 	return *o.Project
@@ -368,7 +368,7 @@ func (o *VrfVirtualCircuit) GetProject() Href {
 
 // GetProjectOk returns a tuple with the Project field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VrfVirtualCircuit) GetProjectOk() (*Href, bool) {
+func (o *VrfVirtualCircuit) GetProjectOk() (*Project, bool) {
 	if o == nil || IsNil(o.Project) {
 		return nil, false
 	}
@@ -384,15 +384,15 @@ func (o *VrfVirtualCircuit) HasProject() bool {
 	return false
 }
 
-// SetProject gets a reference to the given Href and assigns it to the Project field.
-func (o *VrfVirtualCircuit) SetProject(v Href) {
+// SetProject gets a reference to the given Project and assigns it to the Project field.
+func (o *VrfVirtualCircuit) SetProject(v Project) {
 	o.Project = &v
 }
 
 // GetSpeed returns the Speed field value if set, zero value otherwise.
-func (o *VrfVirtualCircuit) GetSpeed() int32 {
+func (o *VrfVirtualCircuit) GetSpeed() int64 {
 	if o == nil || IsNil(o.Speed) {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.Speed
@@ -400,7 +400,7 @@ func (o *VrfVirtualCircuit) GetSpeed() int32 {
 
 // GetSpeedOk returns a tuple with the Speed field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VrfVirtualCircuit) GetSpeedOk() (*int32, bool) {
+func (o *VrfVirtualCircuit) GetSpeedOk() (*int64, bool) {
 	if o == nil || IsNil(o.Speed) {
 		return nil, false
 	}
@@ -416,8 +416,8 @@ func (o *VrfVirtualCircuit) HasSpeed() bool {
 	return false
 }
 
-// SetSpeed gets a reference to the given int32 and assigns it to the Speed field.
-func (o *VrfVirtualCircuit) SetSpeed(v int32) {
+// SetSpeed gets a reference to the given int64 and assigns it to the Speed field.
+func (o *VrfVirtualCircuit) SetSpeed(v int64) {
 	o.Speed = &v
 }
 
@@ -707,7 +707,7 @@ func (o VrfVirtualCircuit) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *VrfVirtualCircuit) UnmarshalJSON(bytes []byte) (err error) {
+func (o *VrfVirtualCircuit) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -717,7 +717,7 @@ func (o *VrfVirtualCircuit) UnmarshalJSON(bytes []byte) (err error) {
 
 	allProperties := make(map[string]interface{})
 
-	err = json.Unmarshal(bytes, &allProperties)
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
@@ -731,7 +731,7 @@ func (o *VrfVirtualCircuit) UnmarshalJSON(bytes []byte) (err error) {
 
 	varVrfVirtualCircuit := _VrfVirtualCircuit{}
 
-	err = json.Unmarshal(bytes, &varVrfVirtualCircuit)
+	err = json.Unmarshal(data, &varVrfVirtualCircuit)
 
 	if err != nil {
 		return err
@@ -741,7 +741,7 @@ func (o *VrfVirtualCircuit) UnmarshalJSON(bytes []byte) (err error) {
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "customer_ip")
 		delete(additionalProperties, "description")
 		delete(additionalProperties, "id")

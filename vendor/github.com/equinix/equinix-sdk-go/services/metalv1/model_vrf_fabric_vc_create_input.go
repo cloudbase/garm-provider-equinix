@@ -24,6 +24,7 @@ type VrfFabricVcCreateInput struct {
 	// The preferred email used for communication and notifications about the Equinix Fabric interconnection. Required when using a Project API key. Optional and defaults to the primary user email address when using a User API key.
 	ContactEmail *string `json:"contact_email,omitempty"`
 	Description  *string `json:"description,omitempty"`
+	FacilityId   *string `json:"facility_id,omitempty"`
 	// A Metro ID or code. When creating Fabric VCs (Metal Billed), this is where interconnection will be originating from, as we pre-authorize the use of one of our shared ports as the origin of the interconnection using A-Side service tokens. We only allow local connections for Fabric VCs (Metal Billed), so the destination location must be the same as the origin. For Fabric VCs (Fabric Billed), or shared connections, this will be the destination of the interconnection. We allow remote connections for Fabric VCs (Fabric Billed), so the origin of the interconnection can be a different metro set here.
 	Metro   string  `json:"metro"`
 	Name    string  `json:"name"`
@@ -32,7 +33,7 @@ type VrfFabricVcCreateInput struct {
 	Redundancy       string                                  `json:"redundancy"`
 	ServiceTokenType VlanFabricVcCreateInputServiceTokenType `json:"service_token_type"`
 	// A interconnection speed, in bps, mbps, or gbps. For Fabric VCs, this represents the maximum speed of the interconnection. For Fabric VCs (Metal Billed), this can only be one of the following:  ''50mbps'', ''200mbps'', ''500mbps'', ''1gbps'', ''2gbps'', ''5gbps'' or ''10gbps'', and is required for creation. For Fabric VCs (Fabric Billed), this field will always default to ''10gbps'' even if it is not provided. For example, ''500000000'', ''50m'', or' ''500mbps'' will all work as valid inputs.
-	Speed *int32                      `json:"speed,omitempty"`
+	Speed *string                     `json:"speed,omitempty"`
 	Tags  []string                    `json:"tags,omitempty"`
 	Type  VlanFabricVcCreateInputType `json:"type"`
 	// This field holds a list of VRF UUIDs that will be set automatically on the virtual circuits of Fabric VCs on creation, and can hold up to two UUIDs. Two UUIDs are required when requesting redundant Fabric VCs. The first UUID will be set on the primary virtual circuit, while the second UUID will be set on the secondary. The two UUIDs can be the same if both the primary and secondary virtual circuits will be in the same VRF. This parameter is included in the specification as a developer preview and is generally unavailable. Please contact our Support team for more details.
@@ -127,6 +128,38 @@ func (o *VrfFabricVcCreateInput) HasDescription() bool {
 // SetDescription gets a reference to the given string and assigns it to the Description field.
 func (o *VrfFabricVcCreateInput) SetDescription(v string) {
 	o.Description = &v
+}
+
+// GetFacilityId returns the FacilityId field value if set, zero value otherwise.
+func (o *VrfFabricVcCreateInput) GetFacilityId() string {
+	if o == nil || IsNil(o.FacilityId) {
+		var ret string
+		return ret
+	}
+	return *o.FacilityId
+}
+
+// GetFacilityIdOk returns a tuple with the FacilityId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *VrfFabricVcCreateInput) GetFacilityIdOk() (*string, bool) {
+	if o == nil || IsNil(o.FacilityId) {
+		return nil, false
+	}
+	return o.FacilityId, true
+}
+
+// HasFacilityId returns a boolean if a field has been set.
+func (o *VrfFabricVcCreateInput) HasFacilityId() bool {
+	if o != nil && !IsNil(o.FacilityId) {
+		return true
+	}
+
+	return false
+}
+
+// SetFacilityId gets a reference to the given string and assigns it to the FacilityId field.
+func (o *VrfFabricVcCreateInput) SetFacilityId(v string) {
+	o.FacilityId = &v
 }
 
 // GetMetro returns the Metro field value
@@ -258,9 +291,9 @@ func (o *VrfFabricVcCreateInput) SetServiceTokenType(v VlanFabricVcCreateInputSe
 }
 
 // GetSpeed returns the Speed field value if set, zero value otherwise.
-func (o *VrfFabricVcCreateInput) GetSpeed() int32 {
+func (o *VrfFabricVcCreateInput) GetSpeed() string {
 	if o == nil || IsNil(o.Speed) {
-		var ret int32
+		var ret string
 		return ret
 	}
 	return *o.Speed
@@ -268,7 +301,7 @@ func (o *VrfFabricVcCreateInput) GetSpeed() int32 {
 
 // GetSpeedOk returns a tuple with the Speed field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VrfFabricVcCreateInput) GetSpeedOk() (*int32, bool) {
+func (o *VrfFabricVcCreateInput) GetSpeedOk() (*string, bool) {
 	if o == nil || IsNil(o.Speed) {
 		return nil, false
 	}
@@ -284,8 +317,8 @@ func (o *VrfFabricVcCreateInput) HasSpeed() bool {
 	return false
 }
 
-// SetSpeed gets a reference to the given int32 and assigns it to the Speed field.
-func (o *VrfFabricVcCreateInput) SetSpeed(v int32) {
+// SetSpeed gets a reference to the given string and assigns it to the Speed field.
+func (o *VrfFabricVcCreateInput) SetSpeed(v string) {
 	o.Speed = &v
 }
 
@@ -385,6 +418,9 @@ func (o VrfFabricVcCreateInput) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
+	if !IsNil(o.FacilityId) {
+		toSerialize["facility_id"] = o.FacilityId
+	}
 	toSerialize["metro"] = o.Metro
 	toSerialize["name"] = o.Name
 	if !IsNil(o.Project) {
@@ -408,7 +444,7 @@ func (o VrfFabricVcCreateInput) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *VrfFabricVcCreateInput) UnmarshalJSON(bytes []byte) (err error) {
+func (o *VrfFabricVcCreateInput) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -423,7 +459,7 @@ func (o *VrfFabricVcCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	allProperties := make(map[string]interface{})
 
-	err = json.Unmarshal(bytes, &allProperties)
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
@@ -437,7 +473,7 @@ func (o *VrfFabricVcCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	varVrfFabricVcCreateInput := _VrfFabricVcCreateInput{}
 
-	err = json.Unmarshal(bytes, &varVrfFabricVcCreateInput)
+	err = json.Unmarshal(data, &varVrfFabricVcCreateInput)
 
 	if err != nil {
 		return err
@@ -447,9 +483,10 @@ func (o *VrfFabricVcCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "contact_email")
 		delete(additionalProperties, "description")
+		delete(additionalProperties, "facility_id")
 		delete(additionalProperties, "metro")
 		delete(additionalProperties, "name")
 		delete(additionalProperties, "project")

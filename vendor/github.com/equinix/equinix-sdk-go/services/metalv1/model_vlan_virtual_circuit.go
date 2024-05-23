@@ -28,17 +28,19 @@ type VlanVirtualCircuit struct {
 	Id          *string                            `json:"id,omitempty"`
 	Name        *string                            `json:"name,omitempty"`
 	NniVlan     *int32                             `json:"nni_vlan,omitempty"`
-	Port        *Href                              `json:"port,omitempty"`
-	Project     *Href                              `json:"project,omitempty"`
+	Port        *InterconnectionPort               `json:"port,omitempty"`
+	Project     *Project                           `json:"project,omitempty"`
 	// For Virtual Circuits on shared and dedicated connections, this speed should match the one set on their Interconnection Ports. For Virtual Circuits on Fabric VCs (both Metal and Fabric Billed) that have found their corresponding Fabric connection, this is the actual speed of the interconnection that was configured when setting up the interconnection on the Fabric Portal. Details on Fabric VCs are included in the specification as a developer preview and is generally unavailable. Please contact our Support team for more details.
-	Speed                *int32                    `json:"speed,omitempty"`
-	Status               *VlanVirtualCircuitStatus `json:"status,omitempty"`
-	Tags                 []string                  `json:"tags,omitempty"`
-	Type                 *VlanVirtualCircuitType   `json:"type,omitempty"`
-	VirtualNetwork       *Href                     `json:"virtual_network,omitempty"`
-	Vnid                 *int32                    `json:"vnid,omitempty"`
-	CreatedAt            *time.Time                `json:"created_at,omitempty"`
-	UpdatedAt            *time.Time                `json:"updated_at,omitempty"`
+	Speed  *int64                    `json:"speed,omitempty"`
+	Status *VlanVirtualCircuitStatus `json:"status,omitempty"`
+	// This field is relevant if using the `shared_port_vlan_to_csp` interconnection type. Once activated on the CSP, this field should contain the resource name that the virtual circuit is connected to on the provider's end.
+	ProviderConnectionId *string                 `json:"provider_connection_id,omitempty"`
+	Tags                 []string                `json:"tags,omitempty"`
+	Type                 *VlanVirtualCircuitType `json:"type,omitempty"`
+	VirtualNetwork       *Href                   `json:"virtual_network,omitempty"`
+	Vnid                 *int32                  `json:"vnid,omitempty"`
+	CreatedAt            *time.Time              `json:"created_at,omitempty"`
+	UpdatedAt            *time.Time              `json:"updated_at,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -269,9 +271,9 @@ func (o *VlanVirtualCircuit) SetNniVlan(v int32) {
 }
 
 // GetPort returns the Port field value if set, zero value otherwise.
-func (o *VlanVirtualCircuit) GetPort() Href {
+func (o *VlanVirtualCircuit) GetPort() InterconnectionPort {
 	if o == nil || IsNil(o.Port) {
-		var ret Href
+		var ret InterconnectionPort
 		return ret
 	}
 	return *o.Port
@@ -279,7 +281,7 @@ func (o *VlanVirtualCircuit) GetPort() Href {
 
 // GetPortOk returns a tuple with the Port field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VlanVirtualCircuit) GetPortOk() (*Href, bool) {
+func (o *VlanVirtualCircuit) GetPortOk() (*InterconnectionPort, bool) {
 	if o == nil || IsNil(o.Port) {
 		return nil, false
 	}
@@ -295,15 +297,15 @@ func (o *VlanVirtualCircuit) HasPort() bool {
 	return false
 }
 
-// SetPort gets a reference to the given Href and assigns it to the Port field.
-func (o *VlanVirtualCircuit) SetPort(v Href) {
+// SetPort gets a reference to the given InterconnectionPort and assigns it to the Port field.
+func (o *VlanVirtualCircuit) SetPort(v InterconnectionPort) {
 	o.Port = &v
 }
 
 // GetProject returns the Project field value if set, zero value otherwise.
-func (o *VlanVirtualCircuit) GetProject() Href {
+func (o *VlanVirtualCircuit) GetProject() Project {
 	if o == nil || IsNil(o.Project) {
-		var ret Href
+		var ret Project
 		return ret
 	}
 	return *o.Project
@@ -311,7 +313,7 @@ func (o *VlanVirtualCircuit) GetProject() Href {
 
 // GetProjectOk returns a tuple with the Project field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VlanVirtualCircuit) GetProjectOk() (*Href, bool) {
+func (o *VlanVirtualCircuit) GetProjectOk() (*Project, bool) {
 	if o == nil || IsNil(o.Project) {
 		return nil, false
 	}
@@ -327,15 +329,15 @@ func (o *VlanVirtualCircuit) HasProject() bool {
 	return false
 }
 
-// SetProject gets a reference to the given Href and assigns it to the Project field.
-func (o *VlanVirtualCircuit) SetProject(v Href) {
+// SetProject gets a reference to the given Project and assigns it to the Project field.
+func (o *VlanVirtualCircuit) SetProject(v Project) {
 	o.Project = &v
 }
 
 // GetSpeed returns the Speed field value if set, zero value otherwise.
-func (o *VlanVirtualCircuit) GetSpeed() int32 {
+func (o *VlanVirtualCircuit) GetSpeed() int64 {
 	if o == nil || IsNil(o.Speed) {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.Speed
@@ -343,7 +345,7 @@ func (o *VlanVirtualCircuit) GetSpeed() int32 {
 
 // GetSpeedOk returns a tuple with the Speed field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VlanVirtualCircuit) GetSpeedOk() (*int32, bool) {
+func (o *VlanVirtualCircuit) GetSpeedOk() (*int64, bool) {
 	if o == nil || IsNil(o.Speed) {
 		return nil, false
 	}
@@ -359,8 +361,8 @@ func (o *VlanVirtualCircuit) HasSpeed() bool {
 	return false
 }
 
-// SetSpeed gets a reference to the given int32 and assigns it to the Speed field.
-func (o *VlanVirtualCircuit) SetSpeed(v int32) {
+// SetSpeed gets a reference to the given int64 and assigns it to the Speed field.
+func (o *VlanVirtualCircuit) SetSpeed(v int64) {
 	o.Speed = &v
 }
 
@@ -394,6 +396,38 @@ func (o *VlanVirtualCircuit) HasStatus() bool {
 // SetStatus gets a reference to the given VlanVirtualCircuitStatus and assigns it to the Status field.
 func (o *VlanVirtualCircuit) SetStatus(v VlanVirtualCircuitStatus) {
 	o.Status = &v
+}
+
+// GetProviderConnectionId returns the ProviderConnectionId field value if set, zero value otherwise.
+func (o *VlanVirtualCircuit) GetProviderConnectionId() string {
+	if o == nil || IsNil(o.ProviderConnectionId) {
+		var ret string
+		return ret
+	}
+	return *o.ProviderConnectionId
+}
+
+// GetProviderConnectionIdOk returns a tuple with the ProviderConnectionId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *VlanVirtualCircuit) GetProviderConnectionIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ProviderConnectionId) {
+		return nil, false
+	}
+	return o.ProviderConnectionId, true
+}
+
+// HasProviderConnectionId returns a boolean if a field has been set.
+func (o *VlanVirtualCircuit) HasProviderConnectionId() bool {
+	if o != nil && !IsNil(o.ProviderConnectionId) {
+		return true
+	}
+
+	return false
+}
+
+// SetProviderConnectionId gets a reference to the given string and assigns it to the ProviderConnectionId field.
+func (o *VlanVirtualCircuit) SetProviderConnectionId(v string) {
+	o.ProviderConnectionId = &v
 }
 
 // GetTags returns the Tags field value if set, zero value otherwise.
@@ -628,6 +662,9 @@ func (o VlanVirtualCircuit) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
 	}
+	if !IsNil(o.ProviderConnectionId) {
+		toSerialize["provider_connection_id"] = o.ProviderConnectionId
+	}
 	if !IsNil(o.Tags) {
 		toSerialize["tags"] = o.Tags
 	}
@@ -654,10 +691,10 @@ func (o VlanVirtualCircuit) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *VlanVirtualCircuit) UnmarshalJSON(bytes []byte) (err error) {
+func (o *VlanVirtualCircuit) UnmarshalJSON(data []byte) (err error) {
 	varVlanVirtualCircuit := _VlanVirtualCircuit{}
 
-	err = json.Unmarshal(bytes, &varVlanVirtualCircuit)
+	err = json.Unmarshal(data, &varVlanVirtualCircuit)
 
 	if err != nil {
 		return err
@@ -667,7 +704,7 @@ func (o *VlanVirtualCircuit) UnmarshalJSON(bytes []byte) (err error) {
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "bill")
 		delete(additionalProperties, "bill_type")
 		delete(additionalProperties, "description")
@@ -678,6 +715,7 @@ func (o *VlanVirtualCircuit) UnmarshalJSON(bytes []byte) (err error) {
 		delete(additionalProperties, "project")
 		delete(additionalProperties, "speed")
 		delete(additionalProperties, "status")
+		delete(additionalProperties, "provider_connection_id")
 		delete(additionalProperties, "tags")
 		delete(additionalProperties, "type")
 		delete(additionalProperties, "virtual_network")

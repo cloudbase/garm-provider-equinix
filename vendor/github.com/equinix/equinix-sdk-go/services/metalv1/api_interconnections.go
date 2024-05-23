@@ -187,7 +187,7 @@ type ApiCreateOrganizationInterconnectionRequest struct {
 	exclude                                  *[]string
 }
 
-// Dedicated port or shared interconnection (also known as Fabric VC) creation request
+// Dedicated port or shared interconnection (also known as Fabric VC) creation request.  Shared interconnections can be created with the following request types: * &#x60;VlanCSPConnectionCreateInput&#x60; creates a layer 2 interconnection directly to your Cloud Service Provider. * &#x60;SharedPortVCVlanCreateInput&#x60; creates a layer 2 interconnection that you can finish configuration in Fabric. For new connections, this type is preferred to &#x60;VlanFabricVCCreateInput&#x60;. * &#x60;VlanFabricVCCreateInput&#x60; creates a layer 2 interconnection that you can connect through Fabric with a service token. * &#x60;VrfFabricVCCreateInput&#x60; creates a layer 3 interconnection that you can connect through Fabric with a service token.
 func (r ApiCreateOrganizationInterconnectionRequest) CreateOrganizationInterconnectionRequest(createOrganizationInterconnectionRequest CreateOrganizationInterconnectionRequest) ApiCreateOrganizationInterconnectionRequest {
 	r.createOrganizationInterconnectionRequest = &createOrganizationInterconnectionRequest
 	return r
@@ -369,7 +369,7 @@ type ApiCreateProjectInterconnectionRequest struct {
 	exclude                                  *[]string
 }
 
-// Dedicated port or shared interconnection (also known as Fabric VC) creation request
+// Dedicated port or shared interconnection (also known as Fabric VC) creation request.  Shared interconnections can be created with the following request types: * &#x60;VlanCSPConnectionCreateInput&#x60; creates a layer 2 interconnection directly to your Cloud Service Provider. * &#x60;SharedPortVCVlanCreateInput&#x60; creates a layer 2 interconnection that you can finish configuration in Fabric. For new connections, this type is preferred to &#x60;VlanFabricVCCreateInput&#x60;. * &#x60;VlanFabricVCCreateInput&#x60; creates a layer 2 interconnection that you can connect through Fabric with a service token. * &#x60;VrfFabricVCCreateInput&#x60; creates a layer 3 interconnection that you can connect through Fabric with a service token.
 func (r ApiCreateProjectInterconnectionRequest) CreateOrganizationInterconnectionRequest(createOrganizationInterconnectionRequest CreateOrganizationInterconnectionRequest) ApiCreateProjectInterconnectionRequest {
 	r.createOrganizationInterconnectionRequest = &createOrganizationInterconnectionRequest
 	return r
@@ -1008,6 +1008,141 @@ func (a *InterconnectionsApiService) GetInterconnectionExecute(r ApiGetInterconn
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiGetInterconnectionMetrosRequest struct {
+	ctx        context.Context
+	ApiService *InterconnectionsApiService
+}
+
+func (r ApiGetInterconnectionMetrosRequest) Execute() (*InterconnectionMetroList, *http.Response, error) {
+	return r.ApiService.GetInterconnectionMetrosExecute(r)
+}
+
+/*
+GetInterconnectionMetros Get connectivity to network provider by metro
+
+Displays which providers you can connect to directly from Equinix Metal Metros.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetInterconnectionMetrosRequest
+*/
+func (a *InterconnectionsApiService) GetInterconnectionMetros(ctx context.Context) ApiGetInterconnectionMetrosRequest {
+	return ApiGetInterconnectionMetrosRequest{
+		ApiService: a,
+		ctx:        ctx,
+	}
+}
+
+// Execute executes the request
+//
+//	@return InterconnectionMetroList
+func (a *InterconnectionsApiService) GetInterconnectionMetrosExecute(r ApiGetInterconnectionMetrosRequest) (*InterconnectionMetroList, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *InterconnectionMetroList
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InterconnectionsApiService.GetInterconnectionMetros")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/connections/metros"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["x_auth_token"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Auth-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiGetInterconnectionPortRequest struct {
 	ctx          context.Context
 	ApiService   *InterconnectionsApiService
@@ -1082,6 +1217,141 @@ func (a *InterconnectionsApiService) GetInterconnectionPortExecute(r ApiGetInter
 	if r.exclude != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "exclude", r.exclude, "csv")
 	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["x_auth_token"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Auth-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiGetInterconnectionPricingRequest struct {
+	ctx        context.Context
+	ApiService *InterconnectionsApiService
+}
+
+func (r ApiGetInterconnectionPricingRequest) Execute() (*InterconnectionPricingList, *http.Response, error) {
+	return r.ApiService.GetInterconnectionPricingExecute(r)
+}
+
+/*
+GetInterconnectionPricing Get Interconnection Pricing
+
+Displays pricing information for connecting to networks outside of Equinix.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetInterconnectionPricingRequest
+*/
+func (a *InterconnectionsApiService) GetInterconnectionPricing(ctx context.Context) ApiGetInterconnectionPricingRequest {
+	return ApiGetInterconnectionPricingRequest{
+		ApiService: a,
+		ctx:        ctx,
+	}
+}
+
+// Execute executes the request
+//
+//	@return InterconnectionPricingList
+func (a *InterconnectionsApiService) GetInterconnectionPricingExecute(r ApiGetInterconnectionPricingRequest) (*InterconnectionPricingList, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *InterconnectionPricingList
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InterconnectionsApiService.GetInterconnectionPricing")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/connections/prices"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 

@@ -30,7 +30,7 @@ type VrfCreateInput struct {
 	Description                   *string `json:"description,omitempty"`
 	// A list of CIDR network addresses. Like [\"10.0.0.0/16\", \"2001:d78::/56\"]. IPv4 blocks must be between /8 and /29 in size. IPv6 blocks must be between /56 and /64. A VRF\\'s IP ranges must be defined in order to create VRF IP Reservations, which can then be used for Metal Gateways or Virtual Circuits.
 	IpRanges []string `json:"ip_ranges,omitempty"`
-	LocalAsn *int32   `json:"local_asn,omitempty"`
+	LocalAsn *int64   `json:"local_asn,omitempty"`
 	// The UUID (or metro code) for the Metro in which to create this VRF.
 	Metro                string   `json:"metro"`
 	Name                 string   `json:"name"`
@@ -220,9 +220,9 @@ func (o *VrfCreateInput) SetIpRanges(v []string) {
 }
 
 // GetLocalAsn returns the LocalAsn field value if set, zero value otherwise.
-func (o *VrfCreateInput) GetLocalAsn() int32 {
+func (o *VrfCreateInput) GetLocalAsn() int64 {
 	if o == nil || IsNil(o.LocalAsn) {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.LocalAsn
@@ -230,7 +230,7 @@ func (o *VrfCreateInput) GetLocalAsn() int32 {
 
 // GetLocalAsnOk returns a tuple with the LocalAsn field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *VrfCreateInput) GetLocalAsnOk() (*int32, bool) {
+func (o *VrfCreateInput) GetLocalAsnOk() (*int64, bool) {
 	if o == nil || IsNil(o.LocalAsn) {
 		return nil, false
 	}
@@ -246,8 +246,8 @@ func (o *VrfCreateInput) HasLocalAsn() bool {
 	return false
 }
 
-// SetLocalAsn gets a reference to the given int32 and assigns it to the LocalAsn field.
-func (o *VrfCreateInput) SetLocalAsn(v int32) {
+// SetLocalAsn gets a reference to the given int64 and assigns it to the LocalAsn field.
+func (o *VrfCreateInput) SetLocalAsn(v int64) {
 	o.LocalAsn = &v
 }
 
@@ -372,7 +372,7 @@ func (o VrfCreateInput) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *VrfCreateInput) UnmarshalJSON(bytes []byte) (err error) {
+func (o *VrfCreateInput) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -383,7 +383,7 @@ func (o *VrfCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	allProperties := make(map[string]interface{})
 
-	err = json.Unmarshal(bytes, &allProperties)
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
@@ -397,7 +397,7 @@ func (o *VrfCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	varVrfCreateInput := _VrfCreateInput{}
 
-	err = json.Unmarshal(bytes, &varVrfCreateInput)
+	err = json.Unmarshal(data, &varVrfCreateInput)
 
 	if err != nil {
 		return err
@@ -407,7 +407,7 @@ func (o *VrfCreateInput) UnmarshalJSON(bytes []byte) (err error) {
 
 	additionalProperties := make(map[string]interface{})
 
-	if err = json.Unmarshal(bytes, &additionalProperties); err == nil {
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "bgp_dynamic_neighbors_enabled")
 		delete(additionalProperties, "bgp_dynamic_neighbors_export_route_map")
 		delete(additionalProperties, "bgp_dynamic_neighbors_bfd_enabled")
