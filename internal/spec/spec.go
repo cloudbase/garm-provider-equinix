@@ -51,6 +51,36 @@ const jsonSchema string = `
 			"hardware_reservation_id": {
 				"type": "string",
 				"description": "The hardware reservation ID to use."
+			},
+			"disable_updates": {
+				"type": "boolean",
+				"description": "Disable automatic updates on the VM."
+			},
+			"enable_boot_debug": {
+				"type": "boolean",
+				"description": "Enable boot debug on the VM."
+			},
+			"extra_packages": {
+				"type": "array",
+				"description": "Extra packages to install on the VM.",
+				"items": {
+					"type": "string"
+				}
+			},
+			"runner_install_template": {
+				"type": "string",
+				"description": "This option can be used to override the default runner install template. If used, the caller is responsible for the correctness of the template as well as the suitability of the template for the target OS. Use the extra_context extra spec if your template has variables in it that need to be expanded."
+			},
+			"extra_context": {
+				"type": "object",
+				"description": "Extra context that will be passed to the runner_install_template.",
+				"additionalProperties": {
+					"type": "string"
+				}
+			},
+			"pre_install_scripts": {
+				"type": "object",
+				"description": "A map of pre-install scripts that will be run before the runner install script. These will run as root and can be used to prep a generic image before we attempt to install the runner. The key of the map is the name of the script as it will be written to disk. The value is a byte array with the contents of the script."
 			}
 		},
 		"additionalProperties": false
@@ -91,7 +121,10 @@ type extraSpecs struct {
 	// See: https://deploy.equinix.com/developers/docs/metal/locations/metros/
 	MetroCode string `json:"metro_code"`
 	// HardwareReservationID is the UUID representing the hardware reservation to use.
-	HardwareReservationID *string `json:"hardware_reservation_id,omitempty"`
+	HardwareReservationID *string  `json:"hardware_reservation_id,omitempty"`
+	DisableUpdates        *bool    `json:"disable_updates"`
+	EnableBootDebug       *bool    `json:"enable_boot_debug"`
+	ExtraPackages         []string `json:"extra_packages"`
 }
 
 func GetRunnerSpecFromBootstrapParams(data params.BootstrapInstance, controllerID string) (*RunnerSpec, error) {
@@ -113,6 +146,7 @@ func GetRunnerSpecFromBootstrapParams(data params.BootstrapInstance, controllerI
 	}
 
 	spec := &RunnerSpec{
+		ExtraPackages:   extraSpecs.ExtraPackages,
 		BootstrapParams: data,
 		Tools:           tools,
 		Tags:            tags,
@@ -130,6 +164,9 @@ type RunnerSpec struct {
 	ProjectID             string
 	MetroCode             string
 	HardwareReservationID *string
+	DisableUpdates        bool
+	ExtraPackages         []string
+	EnableBootDebug       bool
 	Tools                 params.RunnerApplicationDownload
 	Tags                  []string
 	BootstrapParams       params.BootstrapInstance
@@ -155,20 +192,32 @@ func (r *RunnerSpec) MergeExtraSpecs(spec extraSpecs) {
 	if spec.MetroCode != "" {
 		r.MetroCode = spec.MetroCode
 	}
+
+	if spec.DisableUpdates != nil {
+		r.DisableUpdates = *spec.DisableUpdates
+	}
+
+	if spec.EnableBootDebug != nil {
+		r.EnableBootDebug = *spec.EnableBootDebug
+	}
 }
 
 func (r *RunnerSpec) ComposeUserData() (string, error) {
-	switch r.BootstrapParams.OSType {
+	bootstrapParams := r.BootstrapParams
+	bootstrapParams.UserDataOptions.DisableUpdatesOnBoot = r.DisableUpdates
+	bootstrapParams.UserDataOptions.ExtraPackages = r.ExtraPackages
+	bootstrapParams.UserDataOptions.EnableBootDebug = r.EnableBootDebug
+	switch bootstrapParams.OSType {
 	case params.Linux, params.Windows:
 	default:
-		return "", fmt.Errorf("unsupported OS type for cloud config: %s", r.BootstrapParams.OSType)
+		return "", fmt.Errorf("unsupported OS type for cloud config: %s", bootstrapParams.OSType)
 	}
 
-	udata, err := DefaultGetCloudconfig(r.BootstrapParams, r.Tools, r.BootstrapParams.Name)
+	udata, err := DefaultGetCloudconfig(bootstrapParams, r.Tools, bootstrapParams.Name)
 	if err != nil {
 		return "", fmt.Errorf("failed to generate userdata: %w", err)
 	}
-	if r.BootstrapParams.OSType == params.Windows {
+	if bootstrapParams.OSType == params.Windows {
 		udata = fmt.Sprintf("#ps1_sysnative\n%s", udata)
 	}
 	return udata, nil
