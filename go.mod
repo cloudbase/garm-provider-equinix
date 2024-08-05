@@ -1,10 +1,12 @@
 module github.com/cloudbase/garm-provider-equinix
 
-go 1.20
+go 1.22
+
+toolchain go1.22.3
 
 require (
 	github.com/BurntSushi/toml v1.3.2
-	github.com/cloudbase/garm-provider-common v0.1.2
+	github.com/cloudbase/garm-provider-common v0.1.3
 	github.com/equinix/equinix-sdk-go v0.39.1
 	github.com/google/uuid v1.6.0
 	github.com/juju/clock v1.0.3
@@ -27,8 +29,8 @@ require (
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/crypto v0.25.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
