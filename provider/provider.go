@@ -18,7 +18,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cloudbase/garm-provider-common/execution"
+	execution "github.com/cloudbase/garm-provider-common/execution/v0.1.0"
 	"github.com/cloudbase/garm-provider-common/params"
 	"github.com/cloudbase/garm-provider-equinix/config"
 	"github.com/cloudbase/garm-provider-equinix/internal/spec"
@@ -29,6 +29,8 @@ import (
 )
 
 var _ execution.ExternalProvider = &equinixProvider{}
+
+var Version = "v0.0.0-unknown"
 
 func NewEquinixProvider(configPath, controllerID string) (execution.ExternalProvider, error) {
 	conf, err := config.NewConfig(configPath)
@@ -204,4 +206,9 @@ func (a *equinixProvider) Start(ctx context.Context, instance string) error {
 		return fmt.Errorf("failed to start device: %w", err)
 	}
 	return nil
+}
+
+// GetVersion returns the provider version
+func (a *equinixProvider) GetVersion(ctx context.Context) string {
+	return Version
 }
