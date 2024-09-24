@@ -21,6 +21,7 @@ import (
 	"github.com/cloudbase/garm-provider-common/cloudconfig"
 	"github.com/cloudbase/garm-provider-common/params"
 	"github.com/cloudbase/garm-provider-common/util"
+	"github.com/invopop/jsonschema"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -38,57 +39,19 @@ var (
 	DefaultGetCloudconfig GetCloudConfigFunc = cloudconfig.GetCloudConfig
 )
 
-const jsonSchema string = `
-	{
-		"$schema": "http://cloudbase.it/garm-provider-equinix/schemas/extra_specs#",
-		"type": "object",
-		"description": "Schema defining supported extra specs for the Garm Equinix Metal Provider",
-		"properties": {
-			"metro_code": {
-				"type": "string",
-				"description": "The metro in which this pool will create runners."
-			},
-			"hardware_reservation_id": {
-				"type": "string",
-				"description": "The hardware reservation ID to use."
-			},
-			"disable_updates": {
-				"type": "boolean",
-				"description": "Disable automatic updates on the VM."
-			},
-			"enable_boot_debug": {
-				"type": "boolean",
-				"description": "Enable boot debug on the VM."
-			},
-			"extra_packages": {
-				"type": "array",
-				"description": "Extra packages to install on the VM.",
-				"items": {
-					"type": "string"
-				}
-			},
-			"runner_install_template": {
-				"type": "string",
-				"description": "This option can be used to override the default runner install template. If used, the caller is responsible for the correctness of the template as well as the suitability of the template for the target OS. Use the extra_context extra spec if your template has variables in it that need to be expanded."
-			},
-			"extra_context": {
-				"type": "object",
-				"description": "Extra context that will be passed to the runner_install_template.",
-				"additionalProperties": {
-					"type": "string"
-				}
-			},
-			"pre_install_scripts": {
-				"type": "object",
-				"description": "A map of pre-install scripts that will be run before the runner install script. These will run as root and can be used to prep a generic image before we attempt to install the runner. The key of the map is the name of the script as it will be written to disk. The value is a byte array with the contents of the script."
-			}
-		},
-		"additionalProperties": false
+func generateJSONSchema() *jsonschema.Schema {
+	reflector := jsonschema.Reflector{
+		AllowAdditionalProperties: false,
 	}
-`
+	// Reflect the extraSpecs struct
+	schema := reflector.Reflect(extraSpecs{})
+
+	return schema
+}
 
 func jsonSchemaValidation(schema json.RawMessage) error {
-	schemaLoader := gojsonschema.NewStringLoader(jsonSchema)
+	jsonSchema := generateJSONSchema()
+	schemaLoader := gojsonschema.NewGoLoader(jsonSchema)
 	extraSpecsLoader := gojsonschema.NewBytesLoader(schema)
 	result, err := gojsonschema.Validate(schemaLoader, extraSpecsLoader)
 	if err != nil {
@@ -119,12 +82,14 @@ func newExtraSpecsFromBootstrapData(data params.BootstrapInstance) (extraSpecs, 
 type extraSpecs struct {
 	// MetroCode is the metro (usually a two letter code) to use for the instance.
 	// See: https://deploy.equinix.com/developers/docs/metal/locations/metros/
-	MetroCode string `json:"metro_code"`
+	MetroCode string `json:"metro_code,omitempty" jsonschema:"description=The metro in which this pool will create runners."`
 	// HardwareReservationID is the UUID representing the hardware reservation to use.
-	HardwareReservationID *string  `json:"hardware_reservation_id,omitempty"`
-	DisableUpdates        *bool    `json:"disable_updates"`
-	EnableBootDebug       *bool    `json:"enable_boot_debug"`
-	ExtraPackages         []string `json:"extra_packages"`
+	HardwareReservationID *string  `json:"hardware_reservation_id,omitempty" jsonschema:"description=The hardware reservation ID to use for the runner."`
+	DisableUpdates        *bool    `json:"disable_updates,omitempty" jsonschema:"description=Disable automatic updates on the VM."`
+	EnableBootDebug       *bool    `json:"enable_boot_debug,omitempty" jsonschema:"description=Enable boot debug on the VM."`
+	ExtraPackages         []string `json:"extra_packages,omitempty" jsonschema:"description=Extra packages to install on the VM."`
+	// The Cloudconfig struct from common package
+	cloudconfig.CloudConfigSpec
 }
 
 func GetRunnerSpecFromBootstrapParams(data params.BootstrapInstance, controllerID string) (*RunnerSpec, error) {

@@ -15,59 +15,13 @@
 package spec
 
 import (
-	"encoding/json"
 	"testing"
 
+	"github.com/cloudbase/garm-provider-common/cloudconfig"
 	"github.com/cloudbase/garm-provider-common/params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestJsonSchemaValidation(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     json.RawMessage
-		errString string
-	}{
-		{
-			name: "Valid input",
-			input: json.RawMessage(`{
-				"metro_code": "AM",
-				"hardware_reservation_id": "id"
-			}`),
-			errString: "",
-		},
-		{
-			name: "Invalid input - wrong data type",
-			input: json.RawMessage(`{
-				"metro_code": true,
-				"hardware_reservation_id": "id"
-			}`),
-			errString: "schema validation failed: [metro_code: Invalid type. Expected: string, given: boolean]",
-		},
-		{
-			name: "Invalid input - additional property",
-			input: json.RawMessage(`{
-				"additional_property": true
-			}`),
-			errString: "Additional property additional_property is not allowed",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := jsonSchemaValidation(tt.input)
-			if tt.errString == "" {
-				assert.NoError(t, err, "Expected no error, got %v", err)
-			} else {
-				assert.Error(t, err, "Expected an error")
-				if err != nil {
-					assert.Contains(t, err.Error(), tt.errString, "Error message does not match")
-				}
-			}
-		})
-	}
-}
 
 func TestNewExtraSpecsFromBootstrapData(t *testing.T) {
 	tests := []struct {
@@ -77,6 +31,123 @@ func TestNewExtraSpecsFromBootstrapData(t *testing.T) {
 		errString      string
 	}{
 		{
+			name: "full specs",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"metro_code": "AM",
+				"hardware_reservation_id": "hw-res-id",
+				"disable_updates": true,
+				"enable_boot_debug": false,
+				"extra_packages": ["package1", "package2"],
+				"runner_install_template": "IyEvYmluL2Jhc2gKZWNobyBJbnN0YWxsaW5nIHJ1bm5lci4uLg==",
+				"pre_install_scripts": {"setup.sh": "IyEvYmluL2Jhc2gKZWNobyBTZXR1cCBzY3JpcHQuLi4="},
+				"extra_context": {"key": "value"}
+				}`),
+			},
+			expectedOutput: extraSpecs{
+				MetroCode:             "AM",
+				HardwareReservationID: Ptr("hw-res-id"),
+				DisableUpdates:        Ptr(true),
+				EnableBootDebug:       Ptr(false),
+				ExtraPackages:         []string{"package1", "package2"},
+				CloudConfigSpec: cloudconfig.CloudConfigSpec{
+					RunnerInstallTemplate: []byte("#!/bin/bash\necho Installing runner..."),
+					PreInstallScripts: map[string][]byte{
+						"setup.sh": []byte("#!/bin/bash\necho Setup script..."),
+					},
+					ExtraContext: map[string]string{"key": "value"},
+				},
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with metro code",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"metro_code": "AM"}`),
+			},
+			expectedOutput: extraSpecs{
+				MetroCode: "AM",
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with HardwareReservationID",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"hardware_reservation_id": "hw-res-id"}`),
+			},
+			expectedOutput: extraSpecs{
+				HardwareReservationID: Ptr("hw-res-id"),
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with DisableUpdates",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"disable_updates": true}`),
+			},
+			expectedOutput: extraSpecs{
+				DisableUpdates: Ptr(true),
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with EnableBootDebug",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"enable_boot_debug": false}`),
+			},
+			expectedOutput: extraSpecs{
+				EnableBootDebug: Ptr(false),
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with ExtraPackages",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"extra_packages": ["package1", "package2"]}`),
+			},
+			expectedOutput: extraSpecs{
+				ExtraPackages: []string{"package1", "package2"},
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with RunnerInstallTemplate",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"runner_install_template": "IyEvYmluL2Jhc2gKZWNobyBJbnN0YWxsaW5nIHJ1bm5lci4uLg=="}`),
+			},
+			expectedOutput: extraSpecs{
+				CloudConfigSpec: cloudconfig.CloudConfigSpec{
+					RunnerInstallTemplate: []byte("#!/bin/bash\necho Installing runner..."),
+				},
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with PreInstallScripts",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"pre_install_scripts": {"setup.sh": "IyEvYmluL2Jhc2gKZWNobyBTZXR1cCBzY3JpcHQuLi4="}}`),
+			},
+			expectedOutput: extraSpecs{
+				CloudConfigSpec: cloudconfig.CloudConfigSpec{
+					PreInstallScripts: map[string][]byte{
+						"setup.sh": []byte("#!/bin/bash\necho Setup script..."),
+					},
+				},
+			},
+			errString: "",
+		},
+		{
+			name: "specs just with ExtraContext",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"extra_context": {"key": "value"}}`),
+			},
+			expectedOutput: extraSpecs{
+				CloudConfigSpec: cloudconfig.CloudConfigSpec{
+					ExtraContext: map[string]string{"key": "value"},
+				},
+			},
+			errString: "",
+		},
+		{
 			name: "Empty specs",
 			specs: params.BootstrapInstance{
 				ExtraSpecs: nil,
@@ -85,23 +156,84 @@ func TestNewExtraSpecsFromBootstrapData(t *testing.T) {
 			errString:      "",
 		},
 		{
-			name: "Valid specs",
+			name: "invalid json specs",
 			specs: params.BootstrapInstance{
-				ExtraSpecs: []byte(`{"metro_code": "AM", "hardware_reservation_id": "id"}`),
-			},
-			expectedOutput: extraSpecs{
-				MetroCode:             "AM",
-				HardwareReservationID: Ptr("id"),
-			},
-			errString: "",
-		},
-		{
-			name: "Invalid specs",
-			specs: params.BootstrapInstance{
-				ExtraSpecs: []byte(`{"metro_code": true}`),
+				ExtraSpecs: []byte(`{"extra_context": }`),
 			},
 			expectedOutput: extraSpecs{},
-			errString:      "metro_code: Invalid type. Expected: string, given: boolean",
+			errString:      "failed to validate extra specs",
+		},
+		{
+			name: "invalid input for metro code - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"metro_code": 1}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "metro_code: Invalid type. Expected: string, given: integer",
+		},
+		{
+			name: "invalid input for hardware reservation id - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"hardware_reservation_id": 1}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "hardware_reservation_id: Invalid type. Expected: string, given: integer",
+		},
+		{
+			name: "invalid input for disable updates - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"disable_updates": "true"}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "disable_updates: Invalid type. Expected: boolean, given: string",
+		},
+		{
+			name: "invalid input for enable boot debug - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"enable_boot_debug": "false"}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "enable_boot_debug: Invalid type. Expected: boolean, given: string",
+		},
+		{
+			name: "invalid input for extra packages - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"extra_packages": "package1"}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "extra_packages: Invalid type. Expected: array, given: string",
+		},
+		{
+			name: "invalid input for runner install template - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"runner_install_template": 1}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "runner_install_template: Invalid type. Expected: string, given: integer",
+		},
+		{
+			name: "invalid input for pre install scripts - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"pre_install_scripts": "setup.sh"}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "pre_install_scripts: Invalid type. Expected: object, given: string",
+		},
+		{
+			name: "invalid input for extra context - wrong data type",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"extra_context": "key"}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "extra_context: Invalid type. Expected: object, given: string",
+		},
+		{
+			name: "invalid input - additional property",
+			specs: params.BootstrapInstance{
+				ExtraSpecs: []byte(`{"additional_property": "key"}`),
+			},
+			expectedOutput: extraSpecs{},
+			errString:      "Additional property additional_property is not allowed",
 		},
 	}
 
