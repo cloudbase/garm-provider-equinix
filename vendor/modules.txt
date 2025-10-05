@@ -8,7 +8,7 @@ github.com/bahlo/generic-list-go
 # github.com/buger/jsonparser v1.1.1
 ## explicit; go 1.13
 github.com/buger/jsonparser
-# github.com/cloudbase/garm-provider-common v0.1.6
+# github.com/cloudbase/garm-provider-common v0.1.8-0.20251001105909-bbcacae60e7c
 ## explicit; go 1.23.0
 github.com/cloudbase/garm-provider-common/cloudconfig
 github.com/cloudbase/garm-provider-common/defaults
@@ -22,7 +22,7 @@ github.com/cloudbase/garm-provider-common/util
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/equinix/equinix-sdk-go v0.54.2
+# github.com/equinix/equinix-sdk-go v0.58.0
 ## explicit; go 1.19
 github.com/equinix/equinix-sdk-go/services/metalv1
 # github.com/felixge/httpsnoop v1.0.4
@@ -46,15 +46,15 @@ github.com/juju/errors
 # github.com/juju/retry v1.0.1
 ## explicit; go 1.17
 github.com/juju/retry
-# github.com/mailru/easyjson v0.9.0
+# github.com/mailru/easyjson v0.9.1
 ## explicit; go 1.20
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jwriter
 # github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/minio/sio v0.4.1
-## explicit; go 1.18
+# github.com/minio/sio v0.4.2
+## explicit; go 1.24
 github.com/minio/sio
 # github.com/pkg/errors v0.9.1
 ## explicit
@@ -65,7 +65,7 @@ github.com/pmezard/go-difflib/difflib
 # github.com/stretchr/objx v0.5.2
 ## explicit; go 1.20
 github.com/stretchr/objx
-# github.com/stretchr/testify v1.10.0
+# github.com/stretchr/testify v1.11.1
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
@@ -86,8 +86,8 @@ github.com/xeipuuv/gojsonreference
 # github.com/xeipuuv/gojsonschema v1.2.0
 ## explicit
 github.com/xeipuuv/gojsonschema
-# golang.org/x/crypto v0.40.0
-## explicit; go 1.23.0
+# golang.org/x/crypto v0.42.0
+## explicit; go 1.24.0
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/chacha20
@@ -95,11 +95,11 @@ golang.org/x/crypto/chacha20poly1305
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
-# golang.org/x/sync v0.16.0
-## explicit; go 1.23.0
+# golang.org/x/sync v0.17.0
+## explicit; go 1.24.0
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.34.0
-## explicit; go 1.23.0
+# golang.org/x/sys v0.36.0
+## explicit; go 1.24.0
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 # gopkg.in/natefinch/lumberjack.v2 v2.2.1
