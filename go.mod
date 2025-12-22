@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	github.com/BurntSushi/toml v1.5.0
 	github.com/cloudbase/garm-provider-common v0.1.8-0.20251001105909-bbcacae60e7c
-	github.com/equinix/equinix-sdk-go v0.58.0
+	github.com/equinix/equinix-sdk-go v0.62.0
 	github.com/google/uuid v1.6.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/juju/clock v1.1.1
